@@ -19,5 +19,8 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::prefix('game')->group(function () {
-    // Aquí definiremos todas las rutas de la API
+    Route::post('/', 'Api\GameController@createGame');
+    Route::post('/{gameId}/attempt', 'Api\GameController@makeAttempt');
+    Route::delete('/{gameId}', 'Api\GameController@deleteGame');
+    Route::get('/{gameId}/attempt/{attemptNumber}', 'Api\GameController@getAttemptResponse');
 });
