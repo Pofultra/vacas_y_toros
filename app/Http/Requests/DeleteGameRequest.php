@@ -3,28 +3,32 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Models\Game;
 
-class DeleteGameRequest extends FormRequest
+class DeleteGameRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     *
-     * @return bool
-     */
-    public function authorize()
+    public function deleteGame($gameId)
     {
-        return false;
-    }
+        // $token = $request->header('Authorization');
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, mixed>
-     */
-    public function rules()
-    {
-        return [
-            //
-        ];
+        // $apiToken = ApiToken::where('token', $token)->first();
+
+        // if (!$apiToken) {
+        //     return response()->json([
+        //         'message' => 'Unauthorized',
+        //     ], 401);
+        // }
+        $game = Game::find($gameId);
+        if (!$game) {
+            return response()->json([
+                'message' => 'Game not found',
+            ], 404);
+        }
+
+        $game->delete();
+
+        return response()->json([
+            'message' => 'Game deleted successfully',
+        ], 200);
     }
 }
