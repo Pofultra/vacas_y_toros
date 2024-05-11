@@ -2,29 +2,60 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
+use App\Models\Game;
 
-class CreateGameRequest extends FormRequest
+
+class CreateGameRequest
 {
+
     /**
-     * Determine if the user is authorized to make this request.
+     * Generates a secret code consisting of 4 random digits.
      *
-     * @return bool
+     * @return string The generated secret code.
      */
-    public function authorize()
+    private function generateSecretCode()
     {
-        return false;
+        $digits = range(0, 9);
+        shuffle($digits);
+        return implode('', array_slice($digits, 0, 4));
     }
 
+
     /**
-     * Get the validation rules that apply to the request.
+     * Creates a new game.
      *
-     * @return array<string, mixed>
+     * @param array $validatedData The validated data from the request.
+     * @return \Illuminate\Http\JsonResponse The response with the game data.
      */
-    public function rules()
+    public function creteGame($validatedData)
     {
-        return [
-            //
-        ];
+
+
+        // Generar el código secreto
+        $secretCode = $this->generateSecretCode();
+
+        // Calcular el tiempo restante
+        $maxTime = env('GAME_MAX_TIME');
+        $remainingTime = $maxTime;
+
+        // Crear el nuevo juego
+        $game = Game::create([
+            'user_name' => $validatedData['user_name'],
+            'user_age' => $validatedData['user_age'],
+            'secret_code' => $secretCode,
+            'attempts' => [],
+            'remaining_time' => $remainingTime,
+            'status' => 'in_progress',
+        ]);
+
+        // $apiToken = ApiToken::create([
+        //     'token' => Str::random(60),
+        // ]);
+
+        return response()->json([
+            'game_id' => $game->id,
+            'remaining_time' => $remainingTime,
+            // 'api_token' => $apiToken->token,
+        ], 201);
     }
 }

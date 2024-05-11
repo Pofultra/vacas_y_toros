@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\GameController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,13 +15,11 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+Route::apiResource('game', GameController::class);
 
-Route::prefix('game')->group(function () {
-    Route::post('/', 'Api\GameController@createGame');
-    Route::post('/{gameId}/attempt', 'Api\GameController@makeAttempt');
-    Route::delete('/{gameId}', 'Api\GameController@deleteGame');
-    Route::get('/{gameId}/attempt/{attemptNumber}', 'Api\GameController@getAttemptResponse');
-});
+// Route::prefix('game')->group(function () {
+//     Route::post('/', GameController::class . '@createGame');
+//     Route::post('/{gameId}/attempt', 'Api\GameController@makeAttempt');
+//     Route::delete('/{gameId}', 'Api\GameController@deleteGame');
+//     Route::get('/{gameId}/attempt/{attemptNumber}', 'Api\GameController@getAttemptResponse');
+// });
