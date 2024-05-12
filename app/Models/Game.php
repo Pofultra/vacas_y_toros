@@ -16,6 +16,7 @@ class Game extends Model
         'attempts',
         'remaining_time',
         'status',
+        'token',
     ];
 
     protected $casts = [

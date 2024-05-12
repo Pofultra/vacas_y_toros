@@ -3,7 +3,9 @@
 namespace App\Http\Requests;
 
 use App\Models\Game;
-
+use Carbon\Carbon;
+use App\Models\ApiToken;
+use Illuminate\Support\Str;
 
 class CreateGameRequest
 {
@@ -40,6 +42,7 @@ class CreateGameRequest
 
         // Crear el nuevo juego
         $game = Game::create([
+            'token' => Str::random(60),
             'user_name' => $validatedData['user_name'],
             'user_age' => $validatedData['user_age'],
             'secret_code' => $secretCode,
@@ -48,14 +51,10 @@ class CreateGameRequest
             'status' => 'in_progress',
         ]);
 
-        // $apiToken = ApiToken::create([
-        //     'token' => Str::random(60),
-        // ]);
-
         return response()->json([
             'game_id' => $game->id,
             'remaining_time' => $remainingTime,
-            // 'api_token' => $apiToken->token,
+            'api_token' => $game->token,
         ], 201);
     }
 }

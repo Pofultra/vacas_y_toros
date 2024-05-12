@@ -9,6 +9,26 @@ class MakeAttemptRequest
 {
 
     /**
+     * Calculates the remaining time based on a given DateTime and remaining minutes.
+     *
+     * @param \DateTime $dateTime The DateTime to calculate the elapsed time from.
+     * @param int $remainingMinutes The remaining minutes to calculate the remaining time for.
+     * @return int The calculated remaining time in minutes.
+     */
+    public function calculateRemainingTime($dateTime, $remainingSeconds)
+    {
+        $currentTime = new \DateTime();
+        $elapsedTime = $dateTime->diff($currentTime);
+        $elapsedSeconds = ($elapsedTime->days * 24 * 60 * 60) + ($elapsedTime->h * 60 * 60) + ($elapsedTime->i * 60) + $elapsedTime->s;
+
+        if ($elapsedSeconds > $remainingSeconds) {
+            return 0;
+        } else {
+            $remainingTime = $remainingSeconds - $elapsedSeconds;
+            return $remainingTime;
+        }
+    }
+    /**
      * Calculates the number of bulls and cows in a game attempt.
      *
      * @param string $secretCode The secret code to guess.
@@ -68,20 +88,13 @@ class MakeAttemptRequest
     }
     public function makeAttempt($gameId, $validatedData)
     {
-        // $token = $request->header('Authorization');
 
-        // $apiToken = ApiToken::where('token', $token)->first();
-
-        // if (!$apiToken) {
-        //     return response()->json([
-        //         'message' => 'Unauthorized',
-        //     ], 401);
-        // }
 
         $game = Game::findOrFail($gameId);
 
         // Verificar si el juego ha expirado
-        if ($game->remaining_time <= 0) {
+        $remainingTime = $this->calculateRemainingTime($game->created_at, $game->remaining_time);
+        if ($remainingTime <= 0) {
             return response()->json([
                 'message' => 'Game Over',
                 'secret_code' => $game->secret_code,
@@ -111,7 +124,7 @@ class MakeAttemptRequest
         $attempts = $game->attempts;
         $attempts[] = $attempt;
         $game->attempts = $attempts;
-        $game->remaining_time -= 1; // Restar 1 segundo al tiempo restante
+        $game->remaining_time = $remainingTime; // Actualizar el tiempo restante
         $game->update();
 
         // Calcular la evaluación

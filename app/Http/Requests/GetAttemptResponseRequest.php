@@ -7,20 +7,24 @@ use App\Models\Game;
 
 class GetAttemptResponseRequest
 {
-    public function getAttemptResponse($gameId, $attemptNumber)
+    public function getAttemptResponse($gameId, $attemptNumber, $token)
     {
-        // $token = $request->header('Authorization');
-
-        // $apiToken = ApiToken::where('token', $token)->first();
-
-        // if (!$apiToken) {
-        //     return response()->json([
-        //         'message' => 'Unauthorized',
-        //     ], 401);
-        // }
-
 
         $game = Game::findOrFail($gameId);
+        if (!$game) {
+            return response()->json([
+                'message' => 'Game not found',
+            ], 404); // Retornar código HTTP 404 Not Found
+        }
+
+
+        $apiToken = ($token === 'Bearer ' . $game->token);
+
+        if (!$apiToken) {
+            return response()->json([
+                'message' => 'Unauthorized',
+            ], 401);
+        }
 
         // Verificar si el número de intento es válido
         if ($attemptNumber < 1 || $attemptNumber > count($game->attempts)) {
@@ -38,7 +42,7 @@ class GetAttemptResponseRequest
             'attempt' => $attempt,
             'bulls' => $bullsAndCows['bulls'],
             'cows' => $bullsAndCows['cows'],
-            // Otros datos relevantes...
+
         ], 200);
     }
 }
