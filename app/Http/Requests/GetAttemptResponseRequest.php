@@ -32,7 +32,7 @@ class GetAttemptResponseRequest
                 'message' => 'Invalid attempt number',
             ], 400); // Retornar código HTTP 400 Bad Request
         }
-
+        $attepts = Game::getGameDataFile($game->token);
         $attempt = $game->attempts[$attemptNumber - 1];
 
         $makeAttempt = new MakeAttemptRequest;

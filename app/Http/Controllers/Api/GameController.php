@@ -36,13 +36,7 @@ class GameController extends Controller
     {
         $token = $request->header('Authorization');
 
-        // $apiToken = ApiToken::where('token', $token)->first();
-
-        // if (!$apiToken) {
-        //     return response()->json([
-        //         'message' => 'Unauthorized',
-        //     ], 401);
-        // }
+        
         $validatedData = $request->validate([
             'attempt' => 'required|string',
         ]);
@@ -52,10 +46,11 @@ class GameController extends Controller
     }
 
     // Método para eliminar un juego existente
-    public function destroy($gameId)
+    public function destroy($gameId,Request $request)
     {
+        $token=$request->header('Authorization');
         $deleteGameRequest = new DeleteGameRequest();
-        return $deleteGameRequest->deleteGame($gameId);
+        return $deleteGameRequest->deleteGame($gameId,$token);
     }
 
     // Método para obtener la respuesta de un intento previo

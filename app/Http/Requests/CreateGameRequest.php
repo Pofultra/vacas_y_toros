@@ -3,8 +3,7 @@
 namespace App\Http\Requests;
 
 use App\Models\Game;
-use Carbon\Carbon;
-use App\Models\ApiToken;
+
 use Illuminate\Support\Str;
 
 class CreateGameRequest
@@ -15,7 +14,7 @@ class CreateGameRequest
      *
      * @return string The generated secret code.
      */
-    private function generateSecretCode()
+    public function generateSecretCode()
     {
         $digits = range(0, 9);
         shuffle($digits);
@@ -46,7 +45,6 @@ class CreateGameRequest
             'user_name' => $validatedData['user_name'],
             'user_age' => $validatedData['user_age'],
             'secret_code' => $secretCode,
-            'attempts' => [],
             'remaining_time' => $remainingTime,
             'status' => 'in_progress',
         ]);

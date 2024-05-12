@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
 use App\Models\Game;
 
 class MakeAttemptRequest
@@ -60,7 +59,7 @@ class MakeAttemptRequest
      * @param int $evaluation The evaluation of the game.
      * @return string The ranking of the game.
      */
-    private function isValidAttempt($attempt)
+    public function isValidAttempt($attempt)
     {
         // Validar que la combinación tenga 4 dígitos, no contenga repeticiones y sean enteros
         $uniqueChars = array_unique(str_split($attempt));
@@ -74,7 +73,7 @@ class MakeAttemptRequest
      * @param int $evaluation The evaluation of the game.
      * @return int The ranking of the game.
      */
-    private function getRanking($game, $evaluation)
+    public function getRanking($game, $evaluation)
     {
         // Obtener todos los juegos ordenados por estado ('won' primero) y evaluación ascendente
         $rankedGames = Game::orderByRaw('CASE WHEN status = "won" THEN 0 ELSE 1 END, score ASC')->get();
@@ -86,15 +85,31 @@ class MakeAttemptRequest
 
         return $ranking;
     }
-    public function makeAttempt($gameId, $validatedData)
+    public function makeAttempt($gameId, $validatedData, $token)
     {
 
 
         $game = Game::findOrFail($gameId);
+        if (!$game) {
+            return response()->json([
+                'message' => 'Game not found',
+            ], 404); // Retornar código HTTP 404 Not Found
+        }
+
+        $apiToken = ($token === 'Bearer ' . $game->token);
+
+        if (!$apiToken) {
+            return response()->json([
+                'message' => 'Unauthorized',
+            ], 401);
+        }
 
         // Verificar si el juego ha expirado
         $remainingTime = $this->calculateRemainingTime($game->created_at, $game->remaining_time);
         if ($remainingTime <= 0) {
+            $game->status = 'expired';
+            $game->update();
+            Game::deleteGameDataFile($game->token); // Eliminar datos del juego
             return response()->json([
                 'message' => 'Game Over',
                 'secret_code' => $game->secret_code,
@@ -109,9 +124,16 @@ class MakeAttemptRequest
                 'message' => 'Invalid attempt',
             ], 400); // Retornar código HTTP 400 Bad Request
         }
+        $var = Game::getGameDataFile($game->token);
+        // Verificar si el intento ya existe en las variables de Redis
+        if (Game::isGameDataFileValid($game->token)) {
+            $attempts = Game::getGameDataFile($game->token);;
+        } else {
+            $attempts = [];
+        }
 
         // Verificar si la combinación ya ha sido intentada
-        if (in_array($attempt, $game->attempts)) {
+        if (in_array($attempt, $attempts)) {
             return response()->json([
                 'message' => 'Duplicate attempt',
             ], 409); // Retornar código HTTP 409 Conflict
@@ -121,9 +143,9 @@ class MakeAttemptRequest
         $bullsAndCows = $this->calculateBullsAndCows($game->secret_code, $attempt);
 
         // Actualizar los intentos y el tiempo restante
-        $attempts = $game->attempts;
+
         $attempts[] = $attempt;
-        $game->attempts = $attempts;
+        Game::updateGameDataFile($game->token, $attempts); // Actualizar los intentos en las variables de sesión
         $game->remaining_time = $remainingTime; // Actualizar el tiempo restante
         $game->update();
 
@@ -136,7 +158,10 @@ class MakeAttemptRequest
         // Verificar si se ha ganado el juego
         if ($bullsAndCows['bulls'] === 4) {
             $game->status = 'won';
-            $game->save();
+            $game->score = $evaluation;
+
+            $game->update();
+            Game::deleteGameDataFile($game->token); // Eliminar datos del juego
         }
 
         return response()->json([
