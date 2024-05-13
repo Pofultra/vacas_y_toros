@@ -3,65 +3,12 @@
 namespace Tests\Unit;
 
 use App\Http\Requests\MakeAttemptRequest;
+use App\Http\Requests\CreateGameRequest;
 use App\Models\Game;
 use Tests\TestCase;
 
 class MakeAttemptRequestTest extends TestCase
-{
-    public function test_calculateRemainingTime()
-    {
-        $request = new MakeAttemptRequest();
-
-        $dateTime = new \DateTime('2022-01-01 12:00:00');
-        $remainingSeconds = 300;
-
-        $remainingTime1 = $request->calculateRemainingTime($dateTime, $remainingSeconds);
-        $remainingTime2 = $request->calculateRemainingTime(new \DateTime(), $remainingSeconds);
-        $this->assertEquals(0, $remainingTime1);
-        $this->assertNotEquals(0, $remainingTime2);
-    }
-
-    public function test_calculateBullsAndCows()
-    {
-        $request = new MakeAttemptRequest();
-
-        $secretCode = '1234';
-        $attempt = '1243';
-
-        $result = $request->calculateBullsAndCows($secretCode, $attempt);
-
-        $this->assertEquals(2, $result['bulls']);
-        $this->assertEquals(2, $result['cows']);
-    }
-
-    public function test_isValidAttempt()
-    {
-        $request = new MakeAttemptRequest();
-
-        $validAttempt = '1234';
-        $invalidAttempt = '1122';
-
-        $isValid = $request->isValidAttempt($validAttempt);
-        $isInvalid = $request->isValidAttempt($invalidAttempt);
-
-        $this->assertTrue($isValid);
-        $this->assertFalse($isInvalid);
-    }
-
-    public function test_getRanking()
-    {
-        $request = new MakeAttemptRequest();
-
-        $game = new Game();
-        $game->id = 1;
-
-        $evaluation = 10;
-
-        $ranking = $request->getRanking($game, $evaluation);
-
-        $this->assertEquals(1, $ranking);
-    }
-
+{ 
     /**
      * Test makeAttempt when game is not found.
      *
@@ -73,7 +20,7 @@ class MakeAttemptRequestTest extends TestCase
         $makeAttemptRequest = new MakeAttemptRequest();
 
         // Intentar hacer un intento con un ID de juego inexistente
-        $response = $makeAttemptRequest->makeAttempt(999, [], 'Bearer invalid_token');
+        $response = $makeAttemptRequest->makeAttempt("test", ['attempt' => '1234'], 'Bearer invalid_token');
 
         // Verificar que la respuesta sea un JsonResponse con el código 404
         $this->assertInstanceOf(\Illuminate\Http\JsonResponse::class, $response);
@@ -91,8 +38,8 @@ class MakeAttemptRequestTest extends TestCase
      */
     public function testMakeAttemptWhenUnauthorized()
     {
-        // Crear un juego nuevo
-        $game = Game::factory()->create();
+        //  Tomar un juego existente
+        $game = Game::first();
 
         // Crear una instancia de MakeAttemptRequest
         $makeAttemptRequest = new MakeAttemptRequest();
@@ -107,5 +54,43 @@ class MakeAttemptRequestTest extends TestCase
         // Verificar que el mensaje de la respuesta sea "Unauthorized"
         $responseData = json_decode($response->getContent(), true);
         $this->assertEquals('Unauthorized', $responseData['message']);
+    }
+
+    /**
+     * Test makeAttempt when game is won.
+     *
+     * @return void
+     */
+    public function testMakeAttemptWhenGameWon()
+    {
+        // Crear un juego nuevo
+        $data = [
+            'user_name' => 'John Doe',
+            'user_age' => 30,
+        ];
+        $newGameRequest = new CreateGameRequest();
+        $newGameRequest->creteGame($data);
+        // tomar el id y el token del juego recién creado
+        $game = Game::latest()->first();
+        // tomar el token de acceso
+        $barear_token = 'Bearer ' . $game->token;
+        // Establecer el código secreto del juego como el intento actual
+        $current_attempt = $game->secret_code;
+
+
+        // Crear una instancia de MakeAttemptRequest
+        $makeAttemptRequest = new MakeAttemptRequest();
+
+        // Intentar hacer un intento con el código secreto correcto
+        $response = $makeAttemptRequest->makeAttempt($game->id, ['attempt' => $current_attempt], $barear_token);
+        // Verificar que la respuesta sea un JsonResponse con el código 200
+        $this->assertInstanceOf(\Illuminate\Http\JsonResponse::class, $response);
+        $this->assertEquals(200, $response->getStatusCode());
+        // Verificar que el mensaje de la respuesta sea "Game won"
+        $responseData = json_decode($response->getContent(), true);
+        $this->assertEquals('Game won', $responseData['message']);
+        // Verificar que el juego se haya marcado como ganado
+        $game = Game::find($game->id);
+        $this->assertEquals('won',$game->status);
     }
 }

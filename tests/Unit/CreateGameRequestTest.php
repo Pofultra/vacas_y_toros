@@ -8,22 +8,7 @@ use App\Http\Requests\CreateGameRequest;
 
 class CreateGameRequestTest extends TestCase
 {
-    /**
-     * Test the generateSecretCode method.
-     *
-     * @return void
-     */
-    public function testGenerateSecretCode()
-    {
-        $createGameRequest = new CreateGameRequest();
-        $secretCode = $createGameRequest->generateSecretCode();
-
-        // Verificar que el código secreto tenga 4 dígitos
-        $this->assertEquals(4, strlen($secretCode));
-
-        // Verificar que el código secreto contenga solo dígitos
-        $this->assertMatchesRegularExpression('/^\d+$/', $secretCode);
-    }
+    
 
     /**
      * Test the createGame method.

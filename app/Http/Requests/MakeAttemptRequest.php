@@ -6,90 +6,19 @@ use App\Models\Game;
 
 class MakeAttemptRequest
 {
-
     /**
-     * Calculates the remaining time based on a given DateTime and remaining minutes.
+     * Makes an attempt in the game.
      *
-     * @param \DateTime $dateTime The DateTime to calculate the elapsed time from.
-     * @param int $remainingMinutes The remaining minutes to calculate the remaining time for.
-     * @return int The calculated remaining time in minutes.
+     * @param int $gameId The ID of the game.
+     * @param array $validatedData The validated data from the request.
+     * @param string $token The API token.
+     * @return \Illuminate\Http\JsonResponse The JSON response containing the result of the attempt.
      */
-    public function calculateRemainingTime($dateTime, $remainingSeconds)
-    {
-        $currentTime = new \DateTime();
-        $elapsedTime = $dateTime->diff($currentTime);
-        $elapsedSeconds = ($elapsedTime->days * 24 * 60 * 60) + ($elapsedTime->h * 60 * 60) + ($elapsedTime->i * 60) + $elapsedTime->s;
 
-        if ($elapsedSeconds > $remainingSeconds) {
-            return 0;
-        } else {
-            $remainingTime = $remainingSeconds - $elapsedSeconds;
-            return $remainingTime;
-        }
-    }
-    /**
-     * Calculates the number of bulls and cows in a game attempt.
-     *
-     * @param string $secretCode The secret code to guess.
-     * @param string $attempt The attempt made by the player.
-     * @return array An array containing the number of bulls and cows.
-     */
-    public function calculateBullsAndCows($secretCode, $attempt)
-    {
-        $bulls = 0;
-        $cows = 0;
-
-        for ($i = 0; $i < 4; $i++) {
-            if ($secretCode[$i] === $attempt[$i]) {
-                $bulls++;
-            } elseif (strpos($secretCode, $attempt[$i]) !== false) {
-                $cows++;
-            }
-        }
-
-        return [
-            'bulls' => $bulls,
-            'cows' => $cows,
-        ];
-    }
-    /**
-     * Gets the ranking of a game based on the evaluation.
-     *
-     * @param Game $game The game to evaluate.
-     * @param int $evaluation The evaluation of the game.
-     * @return string The ranking of the game.
-     */
-    public function isValidAttempt($attempt)
-    {
-        // Validar que la combinación tenga 4 dígitos, no contenga repeticiones y sean enteros
-        $uniqueChars = array_unique(str_split($attempt));
-        $uniqueString = implode('', $uniqueChars);
-        return strlen($attempt) === 4 && strlen($uniqueString) === 4 && ctype_digit($attempt);
-    }
-    /**
-     * Gets the ranking of a game based on the evaluation.
-     *
-     * @param Game $game The game to evaluate.
-     * @param int $evaluation The evaluation of the game.
-     * @return int The ranking of the game.
-     */
-    public function getRanking($game, $evaluation)
-    {
-        // Obtener todos los juegos ordenados por estado ('won' primero) y evaluación ascendente
-        $rankedGames = Game::orderByRaw('CASE WHEN status = "won" THEN 0 ELSE 1 END, score ASC')->get();
-
-        // Encontrar la posición del juego actual en el ranking
-        $ranking = $rankedGames->search(function ($item) use ($game) {
-            return $item->id === $game->id;
-        }) + 1;
-
-        return $ranking;
-    }
     public function makeAttempt($gameId, $validatedData, $token)
     {
 
-
-        $game = Game::findOrFail($gameId);
+        $game = Game::find($gameId);
         if (!$game) {
             return response()->json([
                 'message' => 'Game not found',
@@ -105,7 +34,7 @@ class MakeAttemptRequest
         }
 
         // Verificar si el juego ha expirado
-        $remainingTime = $this->calculateRemainingTime($game->created_at, $game->remaining_time);
+        $remainingTime = Game::calculateRemainingTime($game->created_at, $game->remaining_time);
         if ($remainingTime <= 0) {
             $game->status = 'expired';
             $game->update();
@@ -119,15 +48,15 @@ class MakeAttemptRequest
         $attempt = $validatedData['attempt'];
 
         // Verificar si la combinación es válida
-        if (!$this->isValidAttempt($attempt)) {
+        if (!Game::isValidAttempt($attempt)) {
             return response()->json([
                 'message' => 'Invalid attempt',
             ], 400); // Retornar código HTTP 400 Bad Request
         }
-        $var = Game::getGameDataFile($game->token);
+
         // Verificar si el intento ya existe en las variables de Redis
         if (Game::isGameDataFileValid($game->token)) {
-            $attempts = Game::getGameDataFile($game->token);;
+            $attempts = Game::getGameDataFile($game->token);
         } else {
             $attempts = [];
         }
@@ -140,7 +69,7 @@ class MakeAttemptRequest
         }
 
         // Calcular toros y vacas
-        $bullsAndCows = $this->calculateBullsAndCows($game->secret_code, $attempt);
+        $bullsAndCows = Game::calculateBullsAndCows($game->secret_code, $attempt);
 
         // Actualizar los intentos y el tiempo restante
 
@@ -150,10 +79,10 @@ class MakeAttemptRequest
         $game->update();
 
         // Calcular la evaluación
-        $evaluation = intval($game->remaining_time / 2) + count($game->attempts);
+        $evaluation = intval($game->remaining_time / 2) + count($attempts);
 
         // Obtener el ranking del juego
-        $ranking = $this->getRanking($game, $evaluation);
+        $ranking = Game::getRanking($game, $evaluation);
 
         // Verificar si se ha ganado el juego
         if ($bullsAndCows['bulls'] === 4) {
@@ -162,13 +91,19 @@ class MakeAttemptRequest
 
             $game->update();
             Game::deleteGameDataFile($game->token); // Eliminar datos del juego
+            return response()->json([
+                'message' => 'Game won',
+                'secret_code' => $game->secret_code,
+                'ranking' => $ranking,
+            ], 200); // Retornar código HTTP 200 OK
+
         }
 
         return response()->json([
             'attempt' => $attempt,
             'bulls' => $bullsAndCows['bulls'],
             'cows' => $bullsAndCows['cows'],
-            'attempts_count' => count($game->attempts),
+            'attempts_count' => count($attempts),
             'remaining_time' => $game->remaining_time,
             'evaluation' => $evaluation,
             'ranking' => $ranking,

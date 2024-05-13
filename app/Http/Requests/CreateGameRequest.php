@@ -8,20 +8,6 @@ use Illuminate\Support\Str;
 
 class CreateGameRequest
 {
-
-    /**
-     * Generates a secret code consisting of 4 random digits.
-     *
-     * @return string The generated secret code.
-     */
-    public function generateSecretCode()
-    {
-        $digits = range(0, 9);
-        shuffle($digits);
-        return implode('', array_slice($digits, 0, 4));
-    }
-
-
     /**
      * Creates a new game.
      *
@@ -33,7 +19,7 @@ class CreateGameRequest
 
 
         // Generar el código secreto
-        $secretCode = $this->generateSecretCode();
+        $secretCode = Game::generateSecretCode();
 
         // Calcular el tiempo restante
         $maxTime = env('GAME_MAX_TIME');

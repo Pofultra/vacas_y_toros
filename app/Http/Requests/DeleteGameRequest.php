@@ -7,15 +7,23 @@ use App\Models\Game;
 
 class DeleteGameRequest
 {
+    /**
+     * Delete a game.
+     *
+     * @param int $gameId The ID of the game to delete.
+     * @param string $token The token used for authorization.
+     * @return \Illuminate\Http\JsonResponse The JSON response indicating the result of the deletion.
+     */
     public function deleteGame($gameId, $token)
     {
-
         $game = Game::find($gameId);
+
         if (!$game) {
             return response()->json([
                 'message' => 'Game not found',
             ], 404);
         }
+
         $apiToken = ($token === 'Bearer ' . $game->token);
 
         if (!$apiToken) {

@@ -79,10 +79,106 @@ class Game extends Model
 
         return false;
     }
+
     public static function getGameByUserNameAndAge($userName, $userAge)
     {
         return self::where('user_name', $userName)
             ->where('user_age', $userAge)
             ->first();
+    }
+    public static function deleteAllGames()
+    {
+        return self::truncate();
+    }
+
+    /**
+     * Generates a secret code consisting of 4 random digits.
+     *
+     * @return string The generated secret code.
+     */
+    public static function generateSecretCode()
+    {
+        $digits = range(0, 9);
+        shuffle($digits);
+        return implode('', array_slice($digits, 0, 4));
+    }
+
+    /**
+     * Calculates the remaining time based on a given DateTime and remaining minutes.
+     *
+     * @param \DateTime $dateTime The DateTime to calculate the elapsed time from.
+     * @param int $remainingMinutes The remaining minutes to calculate the remaining time for.
+     * @return int The calculated remaining time in minutes.
+     */
+    public static function calculateRemainingTime($dateTime, $remainingSeconds)
+    {
+        $currentTime = new \DateTime();
+        $elapsedTime = $dateTime->diff($currentTime);
+        $elapsedSeconds = ($elapsedTime->days * 24 * 60 * 60) + ($elapsedTime->h * 60 * 60) + ($elapsedTime->i * 60) + $elapsedTime->s;
+
+        if ($elapsedSeconds > $remainingSeconds) {
+            return 0;
+        } else {
+            $remainingTime = $remainingSeconds - $elapsedSeconds;
+            return $remainingTime;
+        }
+    }
+    /**
+     * Calculates the number of bulls and cows in a game attempt.
+     *
+     * @param string $secretCode The secret code to guess.
+     * @param string $attempt The attempt made by the player.
+     * @return array An array containing the number of bulls and cows.
+     */
+    public static function calculateBullsAndCows($secretCode, $attempt)
+    {
+        $bulls = 0;
+        $cows = 0;
+
+        for ($i = 0; $i < 4; $i++) {
+            if ($secretCode[$i] === $attempt[$i]) {
+                $bulls++;
+            } elseif (strpos($secretCode, $attempt[$i]) !== false) {
+                $cows++;
+            }
+        }
+
+        return [
+            'bulls' => $bulls,
+            'cows' => $cows,
+        ];
+    }
+    /**
+     * Gets the ranking of a game based on the evaluation.
+     *
+     * @param Game $game The game to evaluate.
+     * @param int $evaluation The evaluation of the game.
+     * @return string The ranking of the game.
+     */
+    public static function isValidAttempt($attempt)
+    {
+        // Validar que la combinación tenga 4 dígitos, no contenga repeticiones y sean enteros
+        $uniqueChars = array_unique(str_split($attempt));
+        $uniqueString = implode('', $uniqueChars);
+        return strlen($attempt) === 4 && strlen($uniqueString) === 4 && ctype_digit($attempt);
+    }
+    /**
+     * Gets the ranking of a game based on the evaluation.
+     *
+     * @param Game $game The game to evaluate.
+     * @param int $evaluation The evaluation of the game.
+     * @return int The ranking of the game.
+     */
+    public static function getRanking($game, $evaluation)
+    {
+        // Obtener todos los juegos ordenados por estado ('won' primero) y evaluación ascendente
+        $rankedGames = Game::orderByRaw('CASE WHEN status = "won" THEN 0 ELSE 1 END, score DESC')->get();
+
+        // Encontrar la posición del juego actual en el ranking
+        $ranking = $rankedGames->search(function ($item) use ($game) {
+            return $item->id === $game->id;
+        }) + 1;
+
+        return $ranking;
     }
 }
