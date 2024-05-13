@@ -152,6 +152,9 @@ return [
          * API security definitions. Will be generated into documentation file.
         */
         'securityDefinitions' => [
+            /*
+             * Examples of Security definitions
+            */
             'securitySchemes' => [
                 /*
                  * Examples of Security schemes
@@ -196,8 +199,18 @@ return [
                     'description' => 'Enter token in format (Bearer <token>)',
                     'name' => 'Authorization', // The name of the header or query parameter to be used.
                     'in' => 'header', // The location of the API key. Valid values are "query" or "header".
+                ],                
+                */
+                'bearerAuth' => [
+                    'type' => 'http',
+                    'description' => 'Authentication with Bearer token',
+                    'in' => 'header',
+                    'name' => 'Authorization',
+                    'scheme' => 'bearer',
+                    'bearerFormat' => 'JWT',
                 ],
-                */],
+            ],
+
             'security' => [
                 /*
                  * Examples of Securities
@@ -211,6 +224,7 @@ return [
 
                     'passport' => []
                     */],
+                'bearerAuth' => [],
             ],
         ],
 

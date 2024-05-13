@@ -13,14 +13,14 @@
         "version": "1.0.0"
     },
     "paths": {
-        "/api/games": {
+        "/api/game": {
             "post": {
                 "tags": [
                     "Games"
                 ],
                 "summary": "Create a new game",
                 "description": "Creates a new game.",
-                "operationId": "496a1db2ab2b344c40cad9e98d332d9e",
+                "operationId": "7a2506f2777e2d3f3d3e2290e4635687",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -70,14 +70,14 @@
                 }
             }
         },
-        "/api/games/{gameId}/attempts": {
-            "post": {
+        "/api/game/{gameId}": {
+            "put": {
                 "tags": [
                     "Games"
                 ],
                 "summary": "Make a game attempt",
                 "description": "Validates and processes a game attempt.",
-                "operationId": "1d33234aa7cfc36d15dc696e4a6f3699",
+                "operationId": "fc741c95dd7dc08fdb196339f00b0222",
                 "parameters": [
                     {
                         "name": "gameId",
@@ -220,17 +220,20 @@
                             }
                         }
                     }
-                }
-            }
-        },
-        "/api/games/{gameId}": {
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            },
             "delete": {
                 "tags": [
                     "Games"
                 ],
                 "summary": "Delete a game",
                 "description": "Delete a game.",
-                "operationId": "2de1ef4f7557ff31556e84dc4ad49ad3",
+                "operationId": "7a197bc1ac2c5a72b1e9b2ddf6891adc",
                 "parameters": [
                     {
                         "name": "gameId",
@@ -292,14 +295,14 @@
                 }
             }
         },
-        "/api/games/{gameId}/attempts/{attemptNumber}": {
+        "/api/game/{gameId}/attempts/{attemptNumber}": {
             "get": {
                 "tags": [
                     "Games"
                 ],
                 "summary": "Get attempt response",
                 "description": "Retrieves the response of a specific attempt in a game.",
-                "operationId": "ebca1461d1b7e0d6157d3469e9922460",
+                "operationId": "4ee9e4ce35c9430dd441bb46d6127b1a",
                 "parameters": [
                     {
                         "name": "gameId",
@@ -390,6 +393,18 @@
                         }
                     }
                 }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "description": "Authentication with Bearer token",
+                "in": "header",
+                "name": "Authorization",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
             }
         }
     }

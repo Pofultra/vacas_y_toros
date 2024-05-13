@@ -8,7 +8,6 @@ use App\Http\Requests\CreateGameRequest;
 use App\Http\Requests\MakeAttemptRequest;
 use App\Http\Requests\DeleteGameRequest;
 use App\Http\Requests\GetAttemptResponseRequest;
-use App\Models\ApiToken;
 
 
 
@@ -33,7 +32,7 @@ class GameController extends Controller
      *     
      * 
      * @OA\Post(
-     *     path="/api/games",
+     *     path="/api/game",
      *     summary="Create a new game",
      *     tags={"Games"},
      *     @OA\RequestBody(
@@ -70,14 +69,14 @@ class GameController extends Controller
     /**
      * Validates and processes a game attempt.
      *
-     * @param int $gameId The ID of the game.
-     * @param array $validatedData The validated data from the request.
+     * @param int $gameId The ID of the game.     
      * @param string $token The authorization token.
      * 
-     * @OA\Post(
-     *     path="/api/games/{gameId}/attempts",
+     * @OA\Put(
+     *     path="/api/game/{gameId}",
      *     summary="Make a game attempt",
      *     tags={"Games"},
+     *     security={{ "bearerAuth":{} }},
      *     @OA\Parameter(
      *         name="gameId",
      *         in="path",
@@ -166,7 +165,7 @@ class GameController extends Controller
      * @param string $token The authorization token.
      * 
      * @OA\Delete(
-     *     path="/api/games/{gameId}",
+     *     path="/api/game/{gameId}",
      *     summary="Delete a game",
      *     tags={"Games"},
      *     @OA\Parameter(
@@ -217,7 +216,7 @@ class GameController extends Controller
      * @param string $token The authorization token.
      * 
      * @OA\Get(
-     *     path="/api/games/{gameId}/attempts/{attemptNumber}",
+     *     path="/api/game/{gameId}/attempts/{attemptNumber}",
      *     summary="Get attempt response",
      *     tags={"Games"},
      *     @OA\Parameter(
