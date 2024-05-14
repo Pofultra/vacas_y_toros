@@ -217,7 +217,7 @@ class GameController extends Controller
      * @param string $token The authorization token.
      * 
      * @OA\Get(
-     *     path="/api/game/{gameId}/attempts/{attemptNumber}",
+     *     path="/api/game/{gameId}/{attemptNumber}",
      *     summary="Get attempt response",
      *     tags={"Games"},
      *     security={{ "bearerAuth":{} }},
