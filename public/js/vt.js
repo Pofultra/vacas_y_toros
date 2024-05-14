@@ -1,3 +1,7 @@
+/**
+ * Validates the player name and age before creating a game.
+ * @returns {boolean} Returns true if all validations pass, otherwise false.
+ */
 function validateCreateGame() {
     var playerName = document.getElementById("player_name").value;
     var playerAge = document.getElementById("player_age").value;
@@ -26,6 +30,10 @@ function validateCreateGame() {
 }
 
 // Función para validar la entrada del usuario al hacer clic en el botón 'Submit'
+/**
+ * Validates the user's attempt to guess a 4-digit number.
+ * @returns {boolean} Returns true if the attempt is valid, false otherwise.
+ */
 function validateMakeAttempt() {
     var number = document.getElementById("number").value;
 
@@ -44,6 +52,10 @@ function validateMakeAttempt() {
 }
 
 // Función para validar la entrada del usuario al hacer clic en el botón 'Search'
+/**
+ * Validates the view attempt by checking the index entered by the user.
+ * @returns {boolean} Returns true if the attempt index is valid, otherwise false.
+ */
 function validateViewAttempt() {
     var attemptIndex = document.getElementById("number_of_attempt").value;
 
@@ -60,6 +72,11 @@ function validateViewAttempt() {
     viewAttempt();
     return true;
 }
+/**
+ * Creates a new game by sending a POST request to the server.
+ * Retrieves the response data and updates the session storage with the token, game ID, and remaining time.
+ * Adds the "game-created" class to the "content" element.
+ */
 function createGame() {
     var playerName = document.getElementById("player_name").value;
     var playerAge = document.getElementById("player_age").value;
@@ -87,6 +104,9 @@ function createGame() {
         });
 }
 
+/**
+ * Makes an attempt in the game.
+ */
 function makeAttempt() {
     var number = document.getElementById("number").value;
     var gameId = sessionStorage.getItem("gameId");
@@ -103,10 +123,21 @@ function makeAttempt() {
     })
         .then((response) => response.json())
         .then((data) => {
+            document.getElementById("number").value = "";
             if (data.message === "Game won") {
+                document.getElementById("restart_game").style.display = "block";
+                document.getElementById("ranking").innerText =
+                    "Ranking: " + data.ranking;
+                document.getElementById("status").innerText = data.status;
                 alert("Congratulations! You won the game!");
             } else if (data.message === "Game Over") {
-                alert("Sorry, you lost the game.");
+                document.getElementById("status").innerText = data.status;
+                document.getElementById("ranking").innerText =
+                    "Ranking: " + data.ranking;
+                alert(
+                    "Sorry, you lost the game. the number was " +
+                        data.secret_code
+                );
             }
             // Handle the response data
             document.getElementById("status").innerText = data.status;
@@ -126,6 +157,9 @@ function makeAttempt() {
         });
 }
 
+/**
+ * Fetches game data for a specific attempt and updates the UI with the response data.
+ */
 function viewAttempt() {
     var number = document.getElementById("number_of_attempt").value;
     var gameId = sessionStorage.getItem("gameId");
@@ -184,4 +218,23 @@ function deleteGame() {
         .catch((error) => {
             // Handle any errors
         });
+}
+
+/**
+ * Resets the game by clearing the input fields and removing the game-created class from the content element.
+ */
+function resetGame() {
+    document.getElementById("player_name").value = "";
+    document.getElementById("player_age").value = "";
+    document.getElementById("number").value = "";
+    document.getElementById("content").classList.remove("game-created");
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("gameId");
+    document.getElementById("status").innerText = "";
+    document.getElementById("bulls").innerText = "";
+    document.getElementById("cows").innerText = "";
+    document.getElementById("remaining_time").innerText = "";
+    document.getElementById("evaluation").innerText = "";
+    document.getElementById("ranking").innerText = "";
+    document.getElementById("attempts").innerText = "";
 }

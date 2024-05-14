@@ -17,7 +17,7 @@ use App\Http\Requests\GetAttemptResponseRequest;
  *      title="Game API",
  *      description="API endpoints for managing games",
  *      @OA\Contact(
- *          email="example@example.com"
+ *          email="hivikipof@gmail.com"
  *      ),
  *      @OA\License(
  *          name="MIT License",
@@ -168,6 +168,7 @@ class GameController extends Controller
      *     path="/api/game/{gameId}",
      *     summary="Delete a game",
      *     tags={"Games"},
+     *     security={{ "bearerAuth":{} }},
      *     @OA\Parameter(
      *         name="gameId",
      *         in="path",
@@ -219,6 +220,7 @@ class GameController extends Controller
      *     path="/api/game/{gameId}/attempts/{attemptNumber}",
      *     summary="Get attempt response",
      *     tags={"Games"},
+     *     security={{ "bearerAuth":{} }},
      *     @OA\Parameter(
      *         name="gameId",
      *         in="path",

@@ -27,14 +27,15 @@ class GameTest extends TestCase
     }
     public function test_calculateRemainingTime()
     {
-
+        $dateTime1 = new \DateTime();
+        $dateTime1->modify('-50 seconds');
         $dateTime = new \DateTime('2022-01-01 12:00:00');
         $remainingSeconds = 300;
 
+        $remainingTime2 = Game::calculateRemainingTime($dateTime1, $remainingSeconds);
         $remainingTime1 = Game::calculateRemainingTime($dateTime, $remainingSeconds);
-        $remainingTime2 = Game::calculateRemainingTime(new \DateTime(), $remainingSeconds);
         $this->assertEquals(0, $remainingTime1);
-        $this->assertNotEquals(0, $remainingTime2);
+        $this->assertEquals(250, $remainingTime2);
     }
 
     public function test_calculateBullsAndCows()

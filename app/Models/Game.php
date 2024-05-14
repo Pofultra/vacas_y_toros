@@ -112,8 +112,7 @@ class Game extends Model
     public static function calculateRemainingTime($dateTime, $remainingSeconds)
     {
         $currentTime = new \DateTime();
-        $elapsedTime = $dateTime->diff($currentTime);
-        $elapsedSeconds = ($elapsedTime->days * 24 * 60 * 60) + ($elapsedTime->h * 60 * 60) + ($elapsedTime->i * 60) + $elapsedTime->s;
+        $elapsedSeconds = $currentTime->getTimestamp() - $dateTime->getTimestamp();
 
         if ($elapsedSeconds > $remainingSeconds) {
             return 0;

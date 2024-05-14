@@ -26,24 +26,18 @@
             <h2>Make Attempt</h2>
             <label for="number">Number:</label>
             <input type="text" id="number" name="number"><br><br>
-            <button onclick="validateMakeAttempt()">Submit</button>
+            <button id="attempt_button" onclick="validateMakeAttempt()">Submit</button>
 
         </div>
         <div id="sub_action">
 
-            <div id="show_attempt">
-                <!-- <h2>View Attempt</h2> -->
-                <!-- <label for="number_of_attempt">index:</label> -->
-                <div class="index_attempt_container">
-
-                    <input type="text" id="number_of_attempt" name="number_of_attempt" placeholder="index:"><br><br>
-                    <button onclick="validateViewAttempt()">Search</button>
-                </div>
-            </div>
-
             <div id="delete_game">
 
                 <button onclick="deleteGame()">Delete Game</button>
+            </div>
+            <div id="restart_game" hidden>
+
+                <button onclick="resetGame()">Restart Game</button>
             </div>
         </div>
     </div>
