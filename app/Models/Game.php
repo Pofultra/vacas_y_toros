@@ -13,8 +13,7 @@ class Game extends Model
     protected $fillable = [
         'user_name',
         'user_age',
-        'secret_code',
-        'attempts',
+        'secret_code',        
         'remaining_time',
         'status',
         'token',
@@ -169,7 +168,7 @@ class Game extends Model
      * @param int $evaluation The evaluation of the game.
      * @return int The ranking of the game.
      */
-    public static function getRanking($game, $evaluation)
+    public static function getRanking($game)
     {
         // Obtener todos los juegos ordenados por estado ('won' primero) y evaluación ascendente
         $rankedGames = Game::orderByRaw('CASE WHEN status = "won" THEN 0 ELSE 1 END, score DESC')->get();

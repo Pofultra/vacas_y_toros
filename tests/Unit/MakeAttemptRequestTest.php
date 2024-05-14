@@ -8,7 +8,7 @@ use App\Models\Game;
 use Tests\TestCase;
 
 class MakeAttemptRequestTest extends TestCase
-{ 
+{
     /**
      * Test makeAttempt when game is not found.
      *
@@ -65,7 +65,7 @@ class MakeAttemptRequestTest extends TestCase
     {
         // Crear un juego nuevo
         $data = [
-            'user_name' => 'John Doe',
+            'user_name' => 'Ultra Test',
             'user_age' => 30,
         ];
         $newGameRequest = new CreateGameRequest();
@@ -91,6 +91,6 @@ class MakeAttemptRequestTest extends TestCase
         $this->assertEquals('Game won', $responseData['message']);
         // Verificar que el juego se haya marcado como ganado
         $game = Game::find($game->id);
-        $this->assertEquals('won',$game->status);
+        $this->assertEquals('won', $game->status);
     }
 }

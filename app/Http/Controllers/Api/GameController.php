@@ -39,7 +39,7 @@ class GameController extends Controller
      *         required=true,
      *         @OA\JsonContent(
      *             required={"user_name","user_age"},
-     *             @OA\Property(property="user_name", type="string", example="John Doe"),
+     *             @OA\Property(property="user_name", type="string", example="Ultra Test"),
      *             @OA\Property(property="user_age", type="integer", example=30)
      *         )
      *     ),

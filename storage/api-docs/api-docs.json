@@ -15,9 +15,7 @@
     "paths": {
         "/api/game": {
             "post": {
-                "tags": [
-                    "Games"
-                ],
+                "tags": ["Games"],
                 "summary": "Create a new game",
                 "description": "Creates a new game.",
                 "operationId": "7a2506f2777e2d3f3d3e2290e4635687",
@@ -26,14 +24,11 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "required": [
-                                    "user_name",
-                                    "user_age"
-                                ],
+                                "required": ["user_name", "user_age"],
                                 "properties": {
                                     "user_name": {
                                         "type": "string",
-                                        "example": "John Doe"
+                                        "example": "Ultra Test"
                                     },
                                     "user_age": {
                                         "type": "integer",
@@ -72,9 +67,7 @@
         },
         "/api/game/{gameId}": {
             "put": {
-                "tags": [
-                    "Games"
-                ],
+                "tags": ["Games"],
                 "summary": "Make a game attempt",
                 "description": "Validates and processes a game attempt.",
                 "operationId": "fc741c95dd7dc08fdb196339f00b0222",
@@ -95,9 +88,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "required": [
-                                    "attempt"
-                                ],
+                                "required": ["attempt"],
                                 "properties": {
                                     "attempt": {
                                         "type": "string"
@@ -228,9 +219,7 @@
                 ]
             },
             "delete": {
-                "tags": [
-                    "Games"
-                ],
+                "tags": ["Games"],
                 "summary": "Delete a game",
                 "description": "Delete a game.",
                 "operationId": "7a197bc1ac2c5a72b1e9b2ddf6891adc",
@@ -297,9 +286,7 @@
         },
         "/api/game/{gameId}/attempts/{attemptNumber}": {
             "get": {
-                "tags": [
-                    "Games"
-                ],
+                "tags": ["Games"],
                 "summary": "Get attempt response",
                 "description": "Retrieves the response of a specific attempt in a game.",
                 "operationId": "4ee9e4ce35c9430dd441bb46d6127b1a",

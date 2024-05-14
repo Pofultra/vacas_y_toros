@@ -37,11 +37,14 @@ class MakeAttemptRequest
         $remainingTime = Game::calculateRemainingTime($game->created_at, $game->remaining_time);
         if ($remainingTime <= 0) {
             $game->status = 'expired';
+            // Obtener el ranking del juego
+            $ranking = Game::getRanking($game);
             $game->update();
             Game::deleteGameDataFile($game->token); // Eliminar datos del juego
             return response()->json([
                 'message' => 'Game Over',
                 'secret_code' => $game->secret_code,
+                'ranking' => $ranking,
             ], 410); // Retornar código HTTP 410 Gone
         }
 
@@ -76,19 +79,17 @@ class MakeAttemptRequest
         $attempts[] = $attempt;
         Game::updateGameDataFile($game->token, $attempts); // Actualizar los intentos en las variables de sesión
         $game->remaining_time = $remainingTime; // Actualizar el tiempo restante
-        $game->update();
 
         // Calcular la evaluación
-        $evaluation = intval($game->remaining_time / 2) + count($attempts);
-
+        $game->score =  intval($game->remaining_time / 2) + count($attempts);
         // Obtener el ranking del juego
-        $ranking = Game::getRanking($game, $evaluation);
+        $ranking = Game::getRanking($game);
+
+
 
         // Verificar si se ha ganado el juego
         if ($bullsAndCows['bulls'] === 4) {
             $game->status = 'won';
-            $game->score = $evaluation;
-
             $game->update();
             Game::deleteGameDataFile($game->token); // Eliminar datos del juego
             return response()->json([
@@ -99,13 +100,14 @@ class MakeAttemptRequest
 
         }
 
+        $game->update();
         return response()->json([
             'attempt' => $attempt,
             'bulls' => $bullsAndCows['bulls'],
             'cows' => $bullsAndCows['cows'],
             'attempts_count' => count($attempts),
             'remaining_time' => $game->remaining_time,
-            'evaluation' => $evaluation,
+            'evaluation' => $game->score,
             'ranking' => $ranking,
         ], 200);
     }

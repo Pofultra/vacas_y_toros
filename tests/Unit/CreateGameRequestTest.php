@@ -8,7 +8,7 @@ use App\Http\Requests\CreateGameRequest;
 
 class CreateGameRequestTest extends TestCase
 {
-    
+
 
     /**
      * Test the createGame method.
@@ -17,9 +17,10 @@ class CreateGameRequestTest extends TestCase
      */
     public function testCreateGame()
     {
+
         // Simular datos validados
         $validatedData = [
-            'user_name' => 'John Doe',
+            'user_name' => 'Ultra Test',
             'user_age' => 30,
         ];
 

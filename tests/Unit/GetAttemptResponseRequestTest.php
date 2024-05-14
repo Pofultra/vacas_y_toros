@@ -43,7 +43,7 @@ class GetAttemptResponseRequestTest extends TestCase
         // Create a new game
         $game = Game::create([
             'token' => Str::random(60),
-            'user_name' => 'Test User',
+            'user_name' => 'Ultra Test',
             'user_age' => 30,
             'secret_code' => Game::generateSecretCode(),
             'remaining_time' => 300,
@@ -76,7 +76,7 @@ class GetAttemptResponseRequestTest extends TestCase
 
         $game = Game::create([
             'token' => Str::random(60),
-            'user_name' => 'Test User',
+            'user_name' => 'Ultra Test',
             'user_age' => 30,
             'secret_code' => Game::generateSecretCode(),
             'remaining_time' => 300,
