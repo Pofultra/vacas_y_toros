@@ -1,0 +1,163 @@
+/* Estilos generales */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f0f0f0; /* Color de fondo */
+}
+body h1 {
+    text-align: center;
+}
+
+#content {
+    width: calc(70% - 40px); /* Ancho del 70% menos el espacio para la barra lateral y los márgenes */
+    float: left; /* Flotar a la izquierda */
+    margin-right: 20px; /* Espacio a la derecha */
+    padding: 20px;
+    background-color: #ffffff; /* Color de fondo del contenido */
+    border-radius: 10px; /* Bordes redondeados */
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); /* Sombra */
+}
+#sub_action {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Alinea verticalmente los elementos */    
+    /* flex-wrap: wrap; */
+    width: 60%; /* Ancho del bloque */
+    margin: 0 auto; /* Centrar el bloque horizontalmente */
+
+}
+.index_attempt_container {
+    display: flex; /* Usa flexbox */
+    align-items: center; /* Centra verticalmente los elementos */
+}
+
+
+h1, h2 {
+    color: #003399; /* Color del encabezado */
+}
+
+/* Estilos para el formulario de creación de juego */
+#crete_game {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    color: #333333; /* Color del texto */
+}
+
+input[type="text"] {
+    width: calc(100% - 20px); /* Ancho del 100% menos el espacio para los márgenes */
+    padding: 10px;
+    margin: 0 10px; /* Margen izquierdo y derecho */
+    margin-bottom: 10px;
+    border: 1px solid #cccccc; /* Color del borde */
+    border-radius: 5px;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #003399; /* Color de fondo del botón */
+    color: #ffffff; /* Color del texto del botón */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: block;
+    margin: 0 auto; /* Centrar relativamente */
+}
+
+button:hover {
+    background-color: #001f4d; /* Cambio de color al pasar el ratón */
+}
+
+#game_info {
+    font-size: x-small;
+    border: 2px solid #ffcc00; /* Color de borde destacado */
+    padding: 10px; /* Espacio interno */
+    background-color: #f4f4f4b0; /* Color de fondo */
+    border-radius: 5px; /* Bordes redondeados */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Sombra ligera */
+}
+/* Estilos para el formulario de hacer intento */
+#make_attempt {
+    margin-bottom: 20px;
+}
+
+/* Estilos para la barra lateral */
+#sidebar {
+    width: 25%; /* Ancho de la barra lateral */
+    position: absolute;
+    right: 0; /* Alinear a la derecha */
+    background-color: #f0f0f0; /* Color de fondo */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+#content h1,
+#sidebar h1 {
+    text-align: center;
+}
+
+
+#cronometer, #game_status, #cows_bulls, #score {
+    margin-bottom: 20px;
+}
+
+/* Estilos para los elementos dentro de la barra lateral */
+#cronometer p, #game_status p, #cows_bulls p, #score p {
+    margin: 0;
+    color: #666666; /* Color del texto */
+}
+
+/* Estilos para el mensaje de estado */
+#status {
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+/* Media query para pantallas de hasta 768px */
+@media only screen and (max-width: 768px) {
+    #content,
+    #sidebar {
+        width: 100%;
+        float: none;
+    }
+}
+
+/* Media query para pantallas de hasta 576px */
+@media only screen and (max-width: 576px) {
+    #content,
+    #sidebar {
+        padding: 10px;
+    }
+}
+
+/* Estilos iniciales */
+#make_attempt,
+#show_attempt,
+#delete_game,
+#sidebar {
+    display: none; /* Ocultar por defecto */
+}
+
+/* Mostrar el sidebar y otros bloques después de crear un juego */
+.game-created #create_game,
+.game-created #game_info{
+    display: none; /* Ocultar bloque de crear nuevo juego */
+}
+ #sidebar,
+.game-created #make_attempt,
+.game-created #show_attempt,
+.game-created #delete_game {
+    display: block; /* Mostrar sidebar y otros bloques */
+}
+
+/* Media Queries para mostrar/ocultar elementos en dispositivos pequeños */
+@media (max-width: 768px) {
+    #sidebar,
+    #make_attempt,
+    #show_attempt,
+    #delete_game {
+        display: none; /* Ocultar sidebar y otros bloques en dispositivos pequeños */
+    }
+}

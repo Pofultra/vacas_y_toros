@@ -2,6 +2,8 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Api\GameController;
+use App\Http\Requests\GetAttemptResponseRequest;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,10 +16,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+Route::apiResource('game', GameController::class);
 
 Route::prefix('game')->group(function () {
-    // Aquí definiremos todas las rutas de la API
+    Route::get('/{gameId}/{attemptNumber}', [GameController::class, "getAttemptResponse"])->name('getAttempts');
 });

@@ -213,9 +213,9 @@ return [
     ])->toArray(),
 
     // custom variables game max time
-    'env' => [
-        // ...
-        'GAME_MAX_TIME' => env('GAME_MAX_TIME', 600),
-    ],
+    
+    // ...
+    'GAME_MAX_TIME' => env('GAME_MAX_TIME', 600),
+    
 
 ];
