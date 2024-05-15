@@ -70,6 +70,14 @@ button:hover {
     background-color: #001f4d; /* Cambio de color al pasar el ratón */
 }
 
+#game_info {
+    font-size: x-small;
+    border: 2px solid #ffcc00; /* Color de borde destacado */
+    padding: 10px; /* Espacio interno */
+    background-color: #f4f4f4b0; /* Color de fondo */
+    border-radius: 5px; /* Bordes redondeados */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Sombra ligera */
+}
 /* Estilos para el formulario de hacer intento */
 #make_attempt {
     margin-bottom: 20px;
@@ -133,7 +141,8 @@ button:hover {
 }
 
 /* Mostrar el sidebar y otros bloques después de crear un juego */
-.game-created #create_game {
+.game-created #create_game,
+.game-created #game_info{
     display: none; /* Ocultar bloque de crear nuevo juego */
 }
  #sidebar,

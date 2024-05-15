@@ -13,7 +13,7 @@ class Game extends Model
     protected $fillable = [
         'user_name',
         'user_age',
-        'secret_code',        
+        'secret_code',
         'remaining_time',
         'status',
         'token',
@@ -117,7 +117,7 @@ class Game extends Model
         if ($elapsedSeconds > $remainingSeconds) {
             return 0;
         } else {
-            $remainingTime = $remainingSeconds - $elapsedSeconds;
+            $remainingTime = $elapsedSeconds;
             return $remainingTime;
         }
     }
